@@ -1,10 +1,10 @@
 
-const { authRole, authStaff } = require('../../middlewares/auth');
+const { authRole, authStaff } = require('../../middlewares/adminAuth');
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../../config/dbConnection');
 
-router.get('/userRequests', authStaff, authRole('seniorEngineer'), async (req, res) => {   
+router.get('/', authStaff, authRole('seniorEngineer'), async (req, res) => {   
     try {
         const submittedRequests  =  await pool.query(`SELECT * FROM requests`);
         if (submittedRequests.rows != 0){
@@ -20,7 +20,27 @@ router.get('/userRequests', authStaff, authRole('seniorEngineer'), async (req, r
     }
 });
 
-router.patch('/userRequests/approve/:id', authStaff, authRole('seniorEngineer'), async (req, res) => {
+router.get('/:id',authStaff, authRole('seniorEngineer'), async (req, res) => {   
+    try {
+        const idToReturn = parseInt(req.params.id)
+        const requestToReturn  =  await pool.query(`SELECT * FROM requests WHERE request_id = $1
+        ORDER BY submittedDate`, [idToReturn]);
+        if(requestToReturn.rows != 0 ) {
+            res.status(200).send(requestToReturn.rows);
+            // console.log(requestToReturn.rows);
+        }
+        else {
+            res.status(404).send('The request submission was not found.');
+            // console.log(sampleToReturn.rows);
+            // console.log(idToReturn);
+        }
+    } catch (e) {
+        res.status(400).send('Error: ' + e.message);
+        console.log('Error: ' + e.message);
+    }
+});
+
+router.patch('/approve/:id', authStaff, authRole('seniorEngineer'), async (req, res) => {
     try {
         const { approved } = req.body;
 
@@ -42,5 +62,6 @@ router.patch('/userRequests/approve/:id', authStaff, authRole('seniorEngineer'),
         res.status(400).send('Error: ' + error.message);
         console.log('Error: ' + error.message);
     }
- 
 });
+
+module.exports = router;

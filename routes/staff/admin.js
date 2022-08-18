@@ -2,11 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-const { pool } = require('../config/dbConnection');
-const { adminSchema } = require('../middlewares/authSchema')
+const { pool } = require('../../config/dbConnection');
+const { adminSchema } = require('../../middlewares/authSchema')
 const bcrypt = require('bcrypt');
-const { authStaff, authRole } = require('../middlewares/auth');
-const { authToken } = require('../middlewares/adminAuth');
+const { authStaff, authRole} = require('../../middlewares/adminAuth');
 
 // routing using post to create a new staff
 router.post('/',authStaff, authRole('admin'), async (req, res) => {     //authStaff, authRole('admin')

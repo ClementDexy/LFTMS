@@ -2,11 +2,13 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { pool } = require('../config/dbConnection');
+const { pool } = require('../../config/dbConnection');
+const jwt = require('jsonwebtoken');
 
 router.post('/', async (req, res) => {
 
     const { email, password } = req.body;
+    const secretKey = process.env.JWT_SECRET;
     try {
         const emailRow = await pool.query(`SELECT * FROM reg_users WHERE email= $1;`, [email])
         const user = emailRow.rows;
@@ -24,17 +26,16 @@ router.post('/', async (req, res) => {
             });
         } 
         else if (result === true) { 
-            
-            // res.redirect('dashboardPage.ejs')
+            // req.session.userId = user[0].user_id;
+            // req.session.firstName = user[0].firstname;
+
+            const userToken = jwt.sign({ id: user[0].user_id, email: user[0].email }, secretKey, { expiresIn: '60m' });
             res.status(200).send({
             message: "Signed in successfully",
-            // token: token
+            token: userToken
             });
-            req.session.userId = user[0].user_id;
-            req.session.firstName = user[0].firstname;
-            // res.redirect('/users/dashboard');
-            // console.log(req.session.userId);
-            // console.log("Signed in successfully");
+
+            // pool.query(`UPDATE reg_users SET userToken = $1 WHERE email = $2`, [userToken,email] );
         }
         else {
         

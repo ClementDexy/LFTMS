@@ -1,44 +1,65 @@
 
-const express = require('express');
-const router = express.Router();
-const bcrypt = require("bcrypt");
-const { pool } = require('../config/dbConnection');
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.JWT_SECRET;
+const secretKey = process.env.JWT_ADMIN_SECRET;
 
-async function authToken() {
-    try {
-        return async (req, res, next) => {
-            const token = req.headers.Authorization.split(' ')[1]; 
-    //Authorization: 'Bearer TOKEN'
-        if(!token)
-        {
-            res.status(200).json(
-                {
-                    success: false, 
-                    message: "Error!Token was not provided."});
-        }
-        else{
-            //Decoding the token
-                jwt.verify(token, secretKey, (error, decodedToken) => {
-                    if(error) {
-                      return res.status(400).json({ message: 'Incorrect token or expired' })
-                    }
-                    next();
-                    console.log(decodedToken.email);
-                    return res.status(200).send(decodedToken);
-                    
-               })
-        }
-          }
-    
-    } catch (error) {
-        res.status(401).send('Invalid session token: ' + error.message)
+
+async function authStaff(req, res, next) {
+    const bearerHeader = req.headers["authorization"];
+
+    if (typeof bearerHeader !== "undefined") {
+
+        const bearerToken = bearerHeader.split(" ")[1];
+
+        req.token = bearerToken;
+        jwt.verify(req.token, secretKey, async (err, decoded) => {
+            if (err) {
+                res.sendStatus(403);
+            } else {
+                next();
+                return decoded    
+            }
+        });
     }
-   
+    else {
+        res.sendStatus(403);
+    }
+  }
 
-}
-    module.exports = {authToken}
+
+function authRole(role) {
+    return async (req, res, next) => {
+        const bearerHeader = req.headers["authorization"];
+
+        if (typeof bearerHeader !== "undefined") {
+
+            const bearerToken = bearerHeader.split(" ")[1];
+
+            req.token = bearerToken;
+            jwt.verify(req.token, secretKey, async (err, decoded) => {
+                if (err) {
+                    res.sendStatus(403);
+                } else {
+                    if(role === decoded.role){
+                        next();
+                        return decoded  
+                    }
+                    else{
+                        // res.status(403).send('No no no');
+                        res.sendStatus(403);
+                    }
+                        
+                }
+            });
+
+            // next();
+        }
+            else {
+                res.sendStatus(403);
+            }
+        }
+  }
+
+    module.exports = { authStaff,authRole }
     
     

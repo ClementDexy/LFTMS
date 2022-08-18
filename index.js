@@ -4,8 +4,8 @@ const express = require('express');
 const app = express();
 
 const { pool } = require('./config/dbConnection');
-const registerUser = require('./routes/registration');
-const loginUser = require('./routes/login');
+const registerUser = require('./routes/user/registration');
+const loginUser = require('./routes/user/login');
 const flash = require('express-flash');
 const session = require('express-session');
 const helmet = require("helmet");
@@ -13,19 +13,28 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
 const sampleSubmission = require('./routes/staffDashboard/sampleSubmission');
-const testReport = require('./routes/testReport');
-const staff = require('./routes/admin');
-const staffLogin = require('./routes/staff');
-const { authUser,authRole,authStaff } = require('./middlewares/auth');
-const requests = require('./routes/request');
-const forgotPassword = require('./routes/passwordReset/users/forgotPassword');
-const resetPassword = require('./routes/passwordReset/users/resetPassword');
+// const testReport = require('./routes/testReport');
+const authUser = require('./middlewares/userAuth');
+const {authStaff, authRole} = require('./middlewares/adminAuth');
+const staff = require('./routes/staff/admin');
+const staffLogin = require('./routes/staff/staff');
+const requests = require('./routes/user/request');
+const userRequests = require('./routes/staffDashboard/userRequests');
+const userForgotPassword = require('./routes/passwordReset/users/forgotPassword');
+const userResetPassword = require('./routes/passwordReset/users/resetPassword');
+const staffForgotPassword = require('./routes/passwordReset/admin/forgotPassword');
+const staffResetPassword = require('./routes/passwordReset/admin/resetPassword');
 const uploadProfilePic = require('./routes/profilePic');
+const testResultsAC = require('./routes/testResults/aggregateConcrete');
+const testResultsAB = require('./routes/testResults/asphaltBitumen');
+const testResultsSoil = require('./routes/testResults/soil');
+const logout = require('./routes/logout');
 
 app.use((req,res,next)=>{ 
 res.setHeader('Access-Control-Allow-Origin','*'); 
 res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE'); 
 res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization','json'); 
+res.header("Access-Control-Allow-Credentials", true);
 next(); 
 })
 app.use(flash());
@@ -52,14 +61,21 @@ app.use('/users/register', registerUser);
 app.use('/users/login', loginUser);
 app.use('/users/requests',requests);
 app.use('/samples',sampleSubmission);
-app.use('/testresults',testReport);
+app.use('/staff/userRequests',userRequests);
+// app.use('/testresults',testReport);
 app.use('/staff/register',staff);
 app.use('/staff/login',staffLogin);
-app.use('/forgot-password',forgotPassword);
-app.use('/reset-password',resetPassword);
+app.use('/users/forgot-password',userForgotPassword);
+app.use('/users/reset-password',userResetPassword);
+app.use('/staff/forgot-password',staffForgotPassword);
+app.use('/staff/reset-password',staffResetPassword);
 app.use('/profile/upload',uploadProfilePic);
+app.use('/testResults/aggregateConcrete',testResultsAC);
+app.use('/testResults/asphaltBitumen',testResultsAB);
+app.use('/testResults/soil',testResultsSoil);
+app.use('/logout',logout);
 
-// Pages
+// Pages for Test purposes
 
 app.get('/', async (req, res) => {   
     try {
@@ -105,6 +121,15 @@ app.get('/users/login', async (req, res) => {
         console.log('Error: ' + e.message);
     }
 });
+
+app.get('/requests', async (req, res) => {   
+    try {
+        res.render('request');
+    } catch (e) {
+        res.status(400).send('Error: ' + e.message);
+        console.log('Error: ' + e.message);
+    }
+}); 
 
 app.get('/users/dashboard', authUser, async (req, res) => {   
     try {

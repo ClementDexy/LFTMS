@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-const { pool } = require('../config/dbConnection');
-const { regSchema } = require('../middlewares/authSchema')
+const { pool } = require('../../config/dbConnection');
+const { regSchema } = require('../../middlewares/authSchema')
 const bcrypt = require('bcrypt');
 const flash = require('express-flash');
 

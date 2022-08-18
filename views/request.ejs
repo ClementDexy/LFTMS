@@ -4,10 +4,77 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css">
+    <title>Send Request</title>
 </head>
 <body>
-    <h1>Hello, this is your request form!</h1>
-    <a href="/users/logout" role="button">Logout</a>
+    <h1>Send Request</h1>
+    <form action="/users/requests" method="POST">
+        <div>
+            <input type="text" class="form-control" id="clientAddress" name="clientAddress" placeholder="Enter your Adress">
+        </div>
+        <div>
+            <input type="text" class="form-control" id="companyName" name="companyName" placeholder="Company Name">
+        </div>
+        <div>
+            <input type="text" class="form-control" id="companyAddress" name="companyAddress" placeholder="Company Adress">
+        </div>
+        <div>
+            <input type="text" class="form-control" id="companyTel" name="companyTel" placeholder="Company Telephone number">
+        </div>
+        <div>
+            <input type="text" class="form-control" id="projectName" name="projectName" placeholder="Project Name">
+        </div>
+
+        <div>
+            <input type="text" class="form-control" id="projectLocation" name="projectLocation" placeholder="Project Location">
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-2 col-form-label" for="exampleFormControlSelect1">Test: </label>
+            <div class="col-sm-10">
+                <select class="form-control" id="exampleFormControlSelect1" name="testType" aria-placeholder="Choose...Test identification">
+                    <option>Choose...Test identification</option>
+                    <option>Soils tests</option>
+                    <option>Aggregate tests</option>
+                    <option>Tests on asphalts</option>
+                    <option>Bituminous materials</option>
+                    <option>Cement and concrete tests</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-2 col-form-label" for="exampleFormControlSelect1">Types: </label>
+            <div class="col-sm-10">
+                <select class="form-control" id="exampleFormControlSelect1" name="paramsType" aria-placeholder="Choose...Test identification">
+                    <option >Choose...Types of parameters</option>
+                    <option>1</option>
+                    <option>2</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row ">
+            <label class="col-sm-2 col-form-label" for="exampleFormControlSelect1">Category: </label>
+            <div class="col-sm-10">
+                <select class="form-control" id="exampleFormControlSelect1" name="customerCategory" aria-placeholder="Choose...Test identification">
+                    <option selected>Choose...Category</option>
+                    <option>RTDA project</option>
+                    <option>Local community initiative</option>
+                    <option>Government related project</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <input type="date" class="form-control" id="submittedDate" name="submittedDate" placeholder="submittedDate">
+        </div>
+
+        <div>
+            <input type="submit" value="Send Request"/>
+        </div>
+        <a href="/users/login">Already Registered? Login here</a>
+    </form>
 </body>
 </html>
